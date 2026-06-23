@@ -1,4 +1,359 @@
 {
   "name": "github node",
-  "id": "5mkMLUnrcJn6ui3s"
+  "nodes": [
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.4,
+      "position": [
+        -464,
+        -48
+      ],
+      "id": "05a3f656-f6b1-4d0f-9584-091dc42faa81",
+      "name": "When chat message received",
+      "webhookId": "b43749b7-f5bc-4b88-9190-cccd0fb92a1d"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        -240,
+        -48
+      ],
+      "id": "44595aa2-9c11-4e42-83f1-50568b908f3e",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1.1,
+      "position": [
+        -224,
+        176
+      ],
+      "id": "5cee6aae-22dd-4320-a312-da4351d33c39",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "eilnfpeeGtwDDPjc",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.4,
+      "position": [
+        -96,
+        176
+      ],
+      "id": "6a8e8339-867a-48a2-b5ba-ea783bc700cc",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "5d03fef0-b348-4232-8cd6-314231925084",
+              "name": "=workflowData",
+              "value": "=// This converts your data to JSON string for GitHub\nreturn [{\n  json: {\n    workflow_data: JSON.stringify($input.all(), null, 2),\n    filename: \"ai-agent-workflow.json\",\n    message: \"Update AI agent workflow - \" + new Date().toISOString()\n  }\n}];",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        112,
+        -48
+      ],
+      "id": "46f71120-5840-4c86-8b7d-cdbbfea29801",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "resource": "file",
+        "operation": "edit",
+        "owner": {
+          "__rl": true,
+          "value": "meet-77",
+          "mode": "list",
+          "cachedResultName": "meet-77",
+          "cachedResultUrl": "https://github.com/meet-77"
+        },
+        "repository": {
+          "__rl": true,
+          "value": "n8n-automation-workflow-",
+          "mode": "list",
+          "cachedResultName": "n8n-automation-workflow-",
+          "cachedResultUrl": "https://github.com/meet-77/n8n-automation-workflow-"
+        },
+        "filePath": "workflows/agent-workflow.json",
+        "fileContent": "={{ JSON.stringify($workflow, null, 2) }}",
+        "commitMessage": "=Update AI agent workflow",
+        "additionalParameters": {
+          "branch": {
+            "branch": "=main {{ $json.content.sha }}"
+          }
+        }
+      },
+      "type": "n8n-nodes-base.github",
+      "typeVersion": 1.1,
+      "position": [
+        -464,
+        288
+      ],
+      "id": "989bce06-7f3e-4f7c-a9eb-a3106529c63f",
+      "name": "Edit a file",
+      "webhookId": "ef0a9dd5-572f-4adc-8753-bfa3a5b23d0f",
+      "credentials": {
+        "githubApi": {
+          "id": "nrOnA8ZzK1puLNOg",
+          "name": "GitHub account"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "method": "PUT",
+        "url": "http://localhost:5678/api/v1/workflows/5mkMLUnrcJn6ui3s",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"message\": \"Update AI agent workflow\",\n  \"content\": \"={{ Buffer.from(JSON.stringify($workflow, null, 2)).toString('base64') }}\",\n  \"sha\": \"={{ $('Get a file').item.json.content.sha }}\",\n  \"branch\": \"main\"\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        -464,
+        512
+      ],
+      "id": "8a4dc91d-c337-4ed5-9668-9f9e2a158e1a",
+      "name": "HTTP Request",
+      "credentials": {
+        "githubApi": {
+          "id": "nrOnA8ZzK1puLNOg",
+          "name": "GitHub account"
+        },
+        "httpHeaderAuth": {
+          "id": "mbHCiUfC1erHkp6P",
+          "name": "Header Auth account"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "resource": "file",
+        "operation": "get",
+        "owner": {
+          "__rl": true,
+          "value": "meet-77",
+          "mode": "list",
+          "cachedResultName": "meet-77",
+          "cachedResultUrl": "https://github.com/meet-77"
+        },
+        "repository": {
+          "__rl": true,
+          "value": "n8n-automation-workflow-",
+          "mode": "list",
+          "cachedResultName": "n8n-automation-workflow-",
+          "cachedResultUrl": "https://github.com/meet-77/n8n-automation-workflow-"
+        },
+        "filePath": "workflows/agent-workflow.json",
+        "asBinaryProperty": false,
+        "additionalParameters": {}
+      },
+      "type": "n8n-nodes-base.github",
+      "typeVersion": 1.1,
+      "position": [
+        784,
+        -48
+      ],
+      "id": "7976e084-439d-4832-ba88-4183d733965f",
+      "name": "Get a file",
+      "webhookId": "ff02d74e-0a68-4f03-849e-e98b38262214",
+      "credentials": {
+        "githubApi": {
+          "id": "nrOnA8ZzK1puLNOg",
+          "name": "GitHub account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "http://localhost:5678/api/v1/workflows/5mkMLUnrcJn6ui3s",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-N8N-API-KEY",
+              "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxODQwODdlMy05YTE1LTQ1NDQtYWFhYy1iNGRjZTMyNDhlYjgiLCJpc3MiOiJuOG4iLCJhdWQiOiJwdWJsaWMtYXBpIiwianRpIjoiY2M2ZjU5ZDItNTRmOS00ZDI4LWFlMTItMTZkYmNlYTIwMTkyIiwiaWF0IjoxNzgyMTkzNzI2LCJleHAiOjE3ODQ3NzkyMDB9.zsqP2DWszb-eq8qrMEanaDDTcLH546z1CxkpnpxrCpw"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        336,
+        -48
+      ],
+      "id": "e4ede8fb-3fbf-43f7-b48b-ed8faa0ff100",
+      "name": "HTTP Request1"
+    },
+    {
+      "parameters": {
+        "method": "PUT",
+        "url": "https://api.github.com/repos/meet-77/n8n-automation-workflow-/contents/workflows/agent-workflow.json",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"message\": \"Update AI agent workflow\",\n  \"content\": \"={{ $('Code').item.json.content }}\",\n  \"sha\": \"={{ $('Get a file').item.json.sha }}\",\n  \"branch\": \"main\"\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        1008,
+        -48
+      ],
+      "id": "968774bc-b5e5-413b-b2e8-0e30bcead1af",
+      "name": "HTTP Request2",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "4Kt82Yrt2FvjnJxu",
+          "name": "Header Auth account 2"
+        },
+        "githubApi": {
+          "id": "nrOnA8ZzK1puLNOg",
+          "name": "GitHub account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "return [{\n  json: {\n    content: Buffer.from(\n      JSON.stringify($('Get Full Workflow').item.json, null, 2)\n    ).toString('base64')\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        560,
+        -48
+      ],
+      "id": "4aade571-bd27-432f-84ed-032b4bbb7d2a",
+      "name": "Code in JavaScript1"
+    }
+  ],
+  "connections": {
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get a file": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request1": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript1": {
+      "main": [
+        [
+          {
+            "node": "Get a file",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  }
 }
