@@ -1,8 +1,5 @@
-// This converts your data to JSON string for GitHub
-return [{
-  json: {
-    workflow_data: JSON.stringify($input.all(), null, 2),
-    filename: "ai-agent-workflow.json",
-    message: "Update AI agent workflow - " + new Date().toISOString()
-  }
-}];
+{
+  "active": false,
+  "id": "5mkMLUnrcJn6ui3s",
+  "name": "github node"
+}
